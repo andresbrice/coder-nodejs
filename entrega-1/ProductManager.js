@@ -39,18 +39,21 @@ const productManager = new ProductManager();
 console.log("- Displaying the empty product array:");
 console.log(productManager.getProducts());
 
+// Creo varias instancias del objeto product
 const product1 = new Product("Faina", "Slice", 150, "", "A123", 20);
 const product2 = new Product("Calabrian", "Large", 250, "", "F123", 10);
 const product3 = new Product("Special", "Large", 320, "", "A456", 30);
 const product4 = new Product("Fugazzeta", "Large", 120, "", "T123", 40);
 const product5 = new Product();
 
+// Agrego los productos al array products
 productManager.addProduct(product1);
 productManager.addProduct(product2);
 productManager.addProduct(product3);
 productManager.addProduct(product4);
 productManager.addProduct(product5);
 
+// Muestro la lista de productos completa, intento agregar un producto con el codigo ya existente y trato de obtener productos del listado
 console.log("- List of products after adding them to the products array:");
 console.log(productManager.getProducts());
 console.log("- Trying to add existing code:");
