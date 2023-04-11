@@ -1,48 +1,32 @@
 import { Product } from "./Product.js";
 class ProductManager {
-  static lastId = 0;
   constructor() {
     this.products = [];
   }
 
-  addProduct(title, description, price, thumbnail, code, stock) {
-    // Consulto que esten todos los campos requeridos
-    if (!title || !description || !price || !thumbnail || !code || !stock) {
-      console.log("All fields are required.");
-      return;
-    }
-
-    // Consulto que no exista "code" en el array de productos
-    if (this.products.some((product) => product.code === code)) {
-      console.log("The product code already exists.");
-      return;
-    }
-
-    const product = new Product(
-      ++ProductManager.lastId,
-      title,
-      description,
-      price,
-      thumbnail,
-      code,
-      stock
+  addProduct(product) {
+    const productExist = this.products.some(
+      (prod) => prod.code === product.code
     );
-
+    // Consulto que no exista "code" en el array de productos
+    if (productExist) {
+      return `The product code "${product.code}" already exists.`;
+    }
     // Agrego el producto al array de productos
     this.products.push(product);
     return product;
   }
 
   getProducts() {
+    //Retorno todos los productos
     return this.products;
   }
 
   getProductById(id) {
     // Busco en el array de productos segun el ID y lo retorno en caso que exista. En caso contrario retorno un mensaje por consola indicando que no existe.
-    const product = this.products.find((product) => product.id === id);
+    const product = this.products.find((prod) => prod.id === id);
     if (!product) {
-      console.log("Not Found");
-      return;
+      return "Not Found";
     }
     return product;
   }
@@ -52,69 +36,26 @@ class ProductManager {
 const productManager = new ProductManager();
 
 // Se llamará “getProducts” recién creada la instancia, debe devolver un arreglo vacío []
-console.log("- An empty array should be displayed:");
+console.log("- Displaying the empty product array:");
 console.log(productManager.getProducts());
 
-// Se llamará al método “addProduct” con los campos: {title: “producto prueba”,description:”Este es un producto prueba”, price:200, thumbnail:”Sin imagen”,code:”abc123”,stock:25} El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
-const product1 = productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc123",
-  25
-);
+const product1 = new Product("Faina", "Slice", 150, "", "A123", 20);
+const product2 = new Product("Calabrian", "Large", 250, "", "F123", 10);
+const product3 = new Product("Special", "Large", 320, "", "A456", 30);
+const product4 = new Product("Fugazzeta", "Large", 120, "", "T123", 40);
+const product5 = new Product();
 
-// Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
-console.log("- The added product should be displayed:");
+productManager.addProduct(product1);
+productManager.addProduct(product2);
+productManager.addProduct(product3);
+productManager.addProduct(product4);
+productManager.addProduct(product5);
+
+console.log("- List of products after adding them to the products array:");
 console.log(productManager.getProducts());
-
-// Se llamará al método “addProduct” con los mismos campos de arriba, debe arrojar un error porque el código estará repetido.
-console.log(
-  "- An error message will be displayed because the code already exists:"
-);
-
-const product2 = productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc123",
-  25
-);
-
-// Se evaluará que getProductById devuelva error si no encuentra el producto o el producto en caso de encontrarlo
-console.log(
-  "- An error message will be displayed because the ID doesn't exists:"
-);
-const getProduct1 = productManager.getProductById(3);
-
-// Se evaluara que getProductById devuelva un ID existente
-console.log("- The product found will be displayed according to its id:");
-const getProduct2 = productManager.getProductById(1);
-console.log(getProduct2);
-
-// Se evaluara que funcione el ID autoincremental al agregar otro producto y se llamará el método “getProducts” nuevamente, esta vez deben aparecer los dos productos agregados
-const product3 = productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "def567",
-  25
-);
-
-console.log("- The added product should be displayed:");
-console.log(productManager.getProducts());
-
-// Se evaluara que no se pueda agregar un producto con campos faltantes
-console.log(
-  "- An error message will be displayed because the field title is missing:"
-);
-const product4 = productManager.addProduct(
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "def567",
-  25
-);
+console.log("- Trying to add existing code:");
+console.log(productManager.addProduct(product1));
+console.log("- Getting the product with id 2:");
+console.log(productManager.getProductById(2));
+console.log("- Getting a product with nonexistent id:");
+console.log(productManager.getProductById(7));
