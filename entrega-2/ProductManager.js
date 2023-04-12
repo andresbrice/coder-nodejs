@@ -8,6 +8,7 @@ class ProductManager {
   }
 
   async createFileIfNotExists() {
+    //funcion que crea el archivo en el caso que no exista
     try {
       await fs.access(this.path);
     } catch (error) {
@@ -16,6 +17,7 @@ class ProductManager {
   }
 
   async addProduct(product) {
+    // funcion para agregar productos al archivo
     try {
       await this.createFileIfNotExists();
       const data = await fs.readFile(this.path, "utf-8");
@@ -27,9 +29,9 @@ class ProductManager {
         return `The product code "${product.code}" already exists.`;
       }
 
-      this.products.push(product); // Añadir el nuevo producto al array this.products
+      this.products.push(product); // Añado el nuevo producto al array this.products
 
-      // Guardar la nueva versión del array products que incluye el nuevo producto
+      // Actualizo el array del archivo incluyendo el nuevo producto
       await fs.writeFile(
         this.path,
         JSON.stringify([...products, product]),
@@ -55,6 +57,7 @@ class ProductManager {
   }
 
   async getProductById(id) {
+    //retorno un producto segun su ID
     try {
       const data = await fs.readFile(this.path, "utf8");
       const products = JSON.parse(data);
@@ -66,6 +69,7 @@ class ProductManager {
   }
 
   async updateProduct(id, updateData) {
+    // actualizo un producto segun su ID
     try {
       const data = await fs.readFile(this.path, "utf-8");
       const products = JSON.parse(data);
@@ -87,6 +91,7 @@ class ProductManager {
   }
 
   async deleteProduct(id) {
+    //elimino un producto segun su ID
     try {
       const data = await fs.readFile(this.path, "utf-8");
       const products = JSON.parse(data);
@@ -115,14 +120,7 @@ async function test() {
   console.log("- Displaying the empty product array:");
   console.log(await productManager.getProducts());
 
-  // Se llamará al método “addProduct” con los campos:
-  // title: “producto prueba”
-  // description:”Este es un producto prueba”
-  // price:200,
-  // thumbnail:”Sin imagen”
-  // code:”abc123”,
-  // stock:25
-  // El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
+  // Se llamará al método “addProduct” con los campos y creo productos sin ID repetido
   const product1 = new Product("Faina", "Slice", 150, "", "A123", 20);
   const product2 = new Product("Calabrian", "Large", 250, "", "F123", 10);
   const product3 = new Product("Special", "Large", 320, "", "A456", 30);
@@ -148,14 +146,15 @@ async function test() {
   // se evaluará que no se elimine el id y que sí se haya hecho la actualización.
   console.log("- Updating product with id 1:");
   const updateData = {
-    title: "Producto de prueba actualizado",
-    description: "Este es un producto prueba actualizado",
+    title: "Updated test product",
+    description: "This is an updated test product",
     price: 300,
     thumbnail: "",
-    code: "nuevoCodigo123",
+    code: "newCode123",
     stock: 20,
   };
-  console.log(await productManager.updateProduct(1, updateData));
+
+  console.log(await productManager.updateProduct(2, updateData));
 
   // Se llamará al método “deleteProduct”, se evaluará que realmente se elimine el producto o que arroje un error en caso de no existir.
   console.log("- Deleting product with id 1:");
@@ -164,12 +163,12 @@ async function test() {
   console.log("- Displaying the product array after deleting the product:");
   console.log(await productManager.getProducts());
 
-  // Agregar un producto con un código que ya existe
+  // Agrego un producto con un código que ya existe
   const product5 = new Product(
-    "Nuevo producto",
-    "Descripción del nuevo producto",
+    "New product",
+    "Description of the new product",
     200,
-    "imagen.png",
+    "",
     "F123",
     50
   );
