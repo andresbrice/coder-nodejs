@@ -1,5 +1,4 @@
 export class Product {
-  static idIncrement = 0;
   constructor(
     title = "",
     description = "",
