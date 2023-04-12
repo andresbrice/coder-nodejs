@@ -1,23 +1,21 @@
 import { Product } from "./Product.js";
 import { promises as fs } from "fs";
 
-class ProductManager {
+export class ProductManager {
   constructor(path) {
     this.path = path;
     this.products = [];
   }
 
   async createFileIfNotExists() {
-    //funcion que crea el archivo en el caso que no exista
     try {
       await fs.access(this.path);
     } catch (error) {
-      await fs.writeFile(this.path, JSON.stringify(this.products));
+      await fs.writeFile(this.path, "[]"); // Escribir un arreglo vacío en el archivo
     }
   }
 
   async addProduct(product) {
-    // funcion para agregar productos al archivo
     try {
       await this.createFileIfNotExists();
       const data = await fs.readFile(this.path, "utf-8");
@@ -29,14 +27,10 @@ class ProductManager {
         return `The product code "${product.code}" already exists.`;
       }
 
-      this.products.push(product); // Añado el nuevo producto al array this.products
+      this.products.push(product); // Agrego el producto al array de ProductManager
 
-      // Actualizo el array del archivo incluyendo el nuevo producto
-      await fs.writeFile(
-        this.path,
-        JSON.stringify([...products, product]),
-        "utf-8"
-      );
+      // Actualizo el archivo con los datos del array de ProductManager
+      await fs.writeFile(this.path, JSON.stringify(this.products), "utf-8");
 
       return product;
     } catch (error) {
@@ -117,7 +111,9 @@ async function test() {
   const productManager = new ProductManager("./products.txt");
 
   // Se llamará “getProducts” recién creada la instancia, debe devolver un arreglo vacío []
-  console.log("- Displaying the empty product array:");
+  console.log(
+    "- Displaying the empty product array or the content of the file:"
+  );
   console.log(await productManager.getProducts());
 
   // Se llamará al método “addProduct” con los campos y creo productos sin ID repetido
@@ -144,7 +140,7 @@ async function test() {
 
   // Se llamará al método “updateProduct” y se intentará cambiar un campo de algún producto,
   // se evaluará que no se elimine el id y que sí se haya hecho la actualización.
-  console.log("- Updating product with id 1:");
+  console.log("- Updating product with id 2:");
   const updateData = {
     title: "Updated test product",
     description: "This is an updated test product",
@@ -169,7 +165,7 @@ async function test() {
     "Description of the new product",
     200,
     "",
-    "F123",
+    "T123",
     50
   );
   const result = await productManager.addProduct(product5);
