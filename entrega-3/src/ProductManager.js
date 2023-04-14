@@ -11,7 +11,7 @@ export class ProductManager {
     try {
       await fs.access(this.path);
     } catch (error) {
-      await fs.writeFile(this.path, "[]"); // Escribir un arreglo vacío en el archivo
+      await fs.writeFile(this.path, "[]"); // En caso que el archivo no exista creo uno con un arreglo vacío
     }
   }
 
@@ -20,20 +20,16 @@ export class ProductManager {
       await this.createFileIfNotExists();
       const data = await fs.readFile(this.path, "utf-8");
       const products = JSON.parse(data);
-      const productExist = products.some((prod) => prod.code === product.code);
+      const productExist = products.find((prod) => prod.code === product.code);
 
       if (productExist) {
-        return `The product code "${product.code}" already exists.`;
+        console.log(`The product code "${product.code}" already exists.`);
+        return;
       }
 
-      this.products.push(prod); // Agrego el producto al array
+      this.products = [...products, product];
 
-      const uniqueProducts = this.products.filter(
-        (prod) => !products.some((p) => p.code === prod.code)
-      ); // Filtra solo los nuevos productos
-
-      // Actualizo el archivo con los datos del array de ProductManager
-      await fs.writeFile(this.path, JSON.stringify(uniqueProducts), "utf-8");
+      await fs.writeFile(this.path, JSON.stringify(this.products), "utf-8");
 
       return product;
     } catch (error) {
@@ -73,7 +69,7 @@ export class ProductManager {
 
       const index = products.findIndex((prod) => prod.id === id);
       if (index === -1) {
-        return "Product not found";
+        console.log("Product not found");
       }
 
       const updatedProduct = { ...products[index], ...updateData };
@@ -95,7 +91,7 @@ export class ProductManager {
 
       const index = products.findIndex((prod) => prod.id === id);
       if (index === -1) {
-        return "Product not found";
+        console.log("Product not found");
       }
 
       const deletedProduct = products.splice(index, 1)[0];
@@ -142,6 +138,7 @@ const test = async () => {
     "K123",
     15
   );
+
   await productManager.addProduct(faina);
   await productManager.addProduct(calabrian);
   await productManager.addProduct(special);

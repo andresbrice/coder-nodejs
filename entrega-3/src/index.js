@@ -7,10 +7,14 @@ const app = express();
 
 const PORT = 4000;
 
+app.listen(PORT, () => {
+  console.log(`Server on port ${PORT}`);
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("Desafio Servidores web");
+  res.send(`This is the 'web servers' challenge by Andrés Briceño`);
 });
 
 // Método HTTP para mostrar la ruta /products con todos los productos y si hay un query param de limite que muestre la cantidad solicitada en el parametro
@@ -39,18 +43,14 @@ app.get("/products/:pid", async (req, res) => {
       //en el caso que pid sea un numero devueolvo obtengo el producto desde el archivo .txt
       const product = await productManager.getProductById(parseInt(pid));
       if (!product) {
-        res.send(`No existe un producto con ID ${pid} `);
+        res.send(`There isn't a product with ID ${pid} `);
       } else {
         res.send(JSON.stringify(product));
       }
     } else {
-      res.send(`Debe ingresar un ID númerico`);
+      res.send(`You must enter a numeric ID`);
     }
   } catch (error) {
     console.error(error);
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server on port ${PORT}`);
 });

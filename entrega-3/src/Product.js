@@ -7,6 +7,7 @@ export class Product {
     code = "",
     stock = 0
   ) {
+    this.id = Product.incrementID();
     this.title = title;
     this.description = description;
     this.price = price;
@@ -23,6 +24,7 @@ export class Product {
       } else {
         this.idIncrement = 1;
       }
+
       return this.idIncrement;
     } catch (error) {
       console.error;
