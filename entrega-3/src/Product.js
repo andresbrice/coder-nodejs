@@ -14,4 +14,18 @@ export class Product {
     this.code = code;
     this.stock = stock;
   }
+
+  static incrementID() {
+    //Método estatico para incrementar el ID
+    try {
+      if (this.idIncrement) {
+        this.idIncrement++;
+      } else {
+        this.idIncrement = 1;
+      }
+      return this.idIncrement;
+    } catch (error) {
+      console.error;
+    }
+  }
 }

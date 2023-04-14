@@ -1,10 +1,20 @@
 import { Product } from "./Product.js";
 import { promises as fs } from "fs";
 
-export class ProductManager {
+class ProductManager {
   constructor(path) {
     this.path = path;
     this.products = [];
+  }
+
+  static incrementID() {
+    if (this.idIncrement) {
+      //Existe esta propiedad
+      this.idIncrement++;
+    } else {
+      this.idIncrement = 1;
+    }
+    return this.idIncrement;
   }
 
   async createFileIfNotExists() {
@@ -26,7 +36,7 @@ export class ProductManager {
       if (productExist) {
         return `The product code "${product.code}" already exists.`;
       }
-
+      product.id = ProductManager.incrementID();
       this.products.push(product); // Agrego el producto al array de ProductManager
 
       // Actualizo el archivo con los datos del array de ProductManager
@@ -53,7 +63,7 @@ export class ProductManager {
   async getProductById(id) {
     //retorno un producto segun su ID
     try {
-      const data = await fs.readFile(this.path, "utf8");
+      const data = await fs.readFile(this.path, "utf-8");
       const products = JSON.parse(data);
       const product = products.find((prod) => prod.id === id);
       return product || "Not Found";
