@@ -42,19 +42,16 @@ export class ProductManager {
     try {
       await this.createFileIfNotExists();
       const products = await fs.readFile(this.path, "utf-8");
-      const prods = JSON.parse(products);
-      return prods;
+      return JSON.parse(products);
     } catch (error) {
       return error;
     }
   }
 
   async getProductById(id) {
-    //retorno un producto segun su ID
     try {
-      const data = await fs.readFile(this.path, "utf-8");
-      const products = JSON.parse(data);
-      const product = products.find((prod) => prod.id === id);
+      const products = await this.getProducts();
+      const product = products.find((prod) => prod.id === parseInt(id));
       return product;
     } catch (error) {
       console.error(error);
@@ -64,8 +61,7 @@ export class ProductManager {
   async updateProduct(id, updateData) {
     // actualizo un producto segun su ID
     try {
-      const data = await fs.readFile(this.path, "utf-8");
-      const products = JSON.parse(data);
+      const products = await this.getProducts();
 
       const index = products.findIndex((prod) => prod.id === id);
       if (index === -1) {
@@ -86,8 +82,7 @@ export class ProductManager {
   async deleteProduct(id) {
     //elimino un producto segun su ID
     try {
-      const data = await fs.readFile(this.path, "utf-8");
-      const products = JSON.parse(data);
+      const products = await this.getProducts();
 
       const index = products.findIndex((prod) => prod.id === id);
       if (index === -1) {

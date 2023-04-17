@@ -1,17 +1,13 @@
 import { ProductManager } from "./ProductManager.js";
 import express from "express";
 
-const productManager = new ProductManager("./products.txt");
-
 const app = express();
 
 const PORT = 4000;
-
-app.listen(PORT, () => {
-  console.log(`Server on port ${PORT}`);
-});
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const productManager = new ProductManager("./products.txt");
 
 app.get("/", (req, res) => {
   res.send(`This is the 'web servers' challenge by Andrés Briceño`);
@@ -24,10 +20,10 @@ app.get("/products", async (req, res) => {
     const { limit } = req.query;
 
     if (!limit || !/^\d+$/.test(limit)) {
-      res.send(JSON.stringify(allProducts));
+      res.send(allProducts);
     } else {
       const productsLimited = allProducts.slice(0, parseInt(limit));
-      res.send(JSON.stringify(productsLimited));
+      res.send(productsLimited);
     }
   } catch (error) {
     console.error(error);
@@ -45,7 +41,7 @@ app.get("/products/:pid", async (req, res) => {
       if (!product) {
         res.send(`There isn't a product with ID ${pid} `);
       } else {
-        res.send(JSON.stringify(product));
+        res.send(product);
       }
     } else {
       res.send(`You must enter a numeric ID`);
@@ -53,4 +49,10 @@ app.get("/products/:pid", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
+});
+
+app.post("/product", (req, res) => {});
+
+app.listen(PORT, () => {
+  console.log(`Server on port ${PORT}`);
 });
