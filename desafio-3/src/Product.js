@@ -1,4 +1,6 @@
 export class Product {
+  static idIncrement = 0;
+
   constructor(
     title = "",
     description = "",
@@ -17,17 +19,12 @@ export class Product {
   }
 
   static incrementID() {
-    //Método estatico para incrementar el ID
     try {
-      if (this.idIncrement) {
-        this.idIncrement++;
-      } else {
-        this.idIncrement = 1;
-      }
-
-      return this.idIncrement;
+      Product.idIncrement =
+        Product.idIncrement < 1 ? 1 : Product.idIncrement + 1;
+      return Product.idIncrement;
     } catch (error) {
-      console.error;
+      return console.log(error);
     }
   }
 }

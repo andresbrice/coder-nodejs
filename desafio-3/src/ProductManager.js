@@ -18,8 +18,7 @@ export class ProductManager {
   async addProduct(product) {
     try {
       await this.createFileIfNotExists();
-      const data = await fs.readFile(this.path, "utf-8");
-      const products = JSON.parse(data);
+      const products = await this.getProducts();
       const productExist = products.find((prod) => prod.code === product.code);
 
       if (productExist) {
@@ -52,7 +51,7 @@ export class ProductManager {
     try {
       const products = await this.getProducts();
       const product = products.find((prod) => prod.id === parseInt(id));
-      return product;
+      return product ? product : "Product not found ";
     } catch (error) {
       console.error(error);
     }
@@ -62,10 +61,10 @@ export class ProductManager {
     // actualizo un producto segun su ID
     try {
       const products = await this.getProducts();
+      const index = products.findIndex((prod) => prod.id === parseInt(id));
 
-      const index = products.findIndex((prod) => prod.id === id);
       if (index === -1) {
-        console.log("Product not found");
+        return console.log("Product not found");
       }
 
       const updatedProduct = { ...products[index], ...updateData };
@@ -83,10 +82,10 @@ export class ProductManager {
     //elimino un producto segun su ID
     try {
       const products = await this.getProducts();
+      const index = products.findIndex((prod) => prod.id === parseInt(id));
 
-      const index = products.findIndex((prod) => prod.id === id);
       if (index === -1) {
-        console.log("Product not found");
+        return console.log("Product not found");
       }
 
       const deletedProduct = products.splice(index, 1)[0];
@@ -145,4 +144,4 @@ const test = async () => {
   await productManager.addProduct(meatEmpanadas);
   await productManager.addProduct(chickenEmpanadas);
 };
-test();
+await test();
