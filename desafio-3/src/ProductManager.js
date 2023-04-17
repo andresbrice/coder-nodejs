@@ -18,22 +18,27 @@ export class ProductManager {
   async addProduct(product) {
     try {
       await this.createFileIfNotExists();
+      const validationMessage = await this.validateProduct(product.code);
+
+      if (validationMessage) return validationMessage;
+
       const products = await this.getProducts();
-      const productExist = products.find((prod) => prod.code === product.code);
+      product.id = Product.incrementID();
+      const productWithId = { id: product.id, ...product };
+      products.push(productWithId);
 
-      if (productExist) {
-        console.log(`The product code "${product.code}" already exists.`);
-        return;
-      }
+      await fs.writeFile(this.path, JSON.stringify(products), "utf-8");
 
-      this.products = [...products, product];
-
-      await fs.writeFile(this.path, JSON.stringify(this.products), "utf-8");
-
-      return product;
+      return "Product added successfully.";
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async validateProduct(code) {
+    const products = await this.getProducts();
+    const productExist = products.find((prod) => prod.code === code);
+    if (productExist) return `The product code "${code}" already exists.`;
   }
 
   async getProducts() {
@@ -43,7 +48,8 @@ export class ProductManager {
       const products = await fs.readFile(this.path, "utf-8");
       return JSON.parse(products);
     } catch (error) {
-      return error;
+      console.error(error);
+      return [];
     }
   }
 
@@ -51,7 +57,7 @@ export class ProductManager {
     try {
       const products = await this.getProducts();
       const product = products.find((prod) => prod.id === parseInt(id));
-      return product ? product : "Product not found ";
+      return product ? product : "Product not found.";
     } catch (error) {
       console.error(error);
     }
@@ -64,7 +70,7 @@ export class ProductManager {
       const index = products.findIndex((prod) => prod.id === parseInt(id));
 
       if (index === -1) {
-        return console.log("Product not found");
+        return "Product not found.";
       }
 
       const updatedProduct = { ...products[index], ...updateData };
@@ -72,27 +78,26 @@ export class ProductManager {
 
       await fs.writeFile(this.path, JSON.stringify(products), "utf-8");
 
-      return updatedProduct;
+      return "Product updated successfully.";
     } catch (error) {
       console.error(error);
     }
   }
 
   async deleteProduct(id) {
-    //elimino un producto segun su ID
     try {
       const products = await this.getProducts();
-      const index = products.findIndex((prod) => prod.id === parseInt(id));
+      const filteredProducts = products.filter(
+        (prod) => prod.id !== parseInt(id)
+      );
 
-      if (index === -1) {
-        return console.log("Product not found");
+      if (filteredProducts.length === products.length) {
+        return "Product not found";
       }
 
-      const deletedProduct = products.splice(index, 1)[0];
+      await fs.writeFile(this.path, JSON.stringify(filteredProducts), "utf-8");
 
-      await fs.writeFile(this.path, JSON.stringify(products), "utf-8");
-
-      return deletedProduct;
+      return "Product deleted successfully";
     } catch (error) {
       console.error(error);
     }
