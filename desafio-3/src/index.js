@@ -51,8 +51,6 @@ app.get("/products/:pid", async (req, res) => {
   }
 });
 
-app.post("/product", (req, res) => {});
-
 app.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
 });
