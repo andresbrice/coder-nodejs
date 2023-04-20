@@ -1,0 +1,35 @@
+[
+  {
+    "id": 3,
+    "title": "Titulo cambiado otra vez",
+    "description": "prueba",
+    "price": 200,
+    "thumbnail": "",
+    "code": "C",
+    "stock": 23,
+    "status": true,
+    "category": "prueba"
+  },
+  {
+    "id": 4,
+    "title": "prueba",
+    "description": "prueba",
+    "price": 200,
+    "thumbnail": "",
+    "code": "B",
+    "stock": 23,
+    "status": true,
+    "category": "prueba"
+  },
+  {
+    "id": 5,
+    "title": "prueba",
+    "description": "prueba",
+    "price": 200,
+    "thumbnail": "",
+    "code": "A",
+    "stock": 23,
+    "status": true,
+    "category": "prueba"
+  }
+]
