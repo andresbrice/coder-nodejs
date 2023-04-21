@@ -70,7 +70,7 @@ export class ProductManager {
       // Retorno producto segun su id
       const products = await this.getProducts();
       const product = products.find((prod) => prod.id === parseInt(id));
-      return product ? product : "Product not found.";
+      return product;
     } catch (error) {
       console.error(error);
     }

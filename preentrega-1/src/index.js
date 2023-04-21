@@ -1,7 +1,6 @@
 import express from "express";
 import productRouter from "./routes/products.routes.js";
-// import cartsRouter from ".routes/carts.routes.js"
-// import { __dirname } from "./path.js";
+import cartRouter from "./routes/carts.routes.js";
 
 // Configuraciones
 const app = express();
@@ -13,8 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/products", productRouter);
-// app.use("/api/carts", cartsRouter);
-// app.use("/static", express.static(__dirname + "/public"));
+app.use("/api/carts", cartRouter);
 
 app.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
@@ -26,7 +24,7 @@ app.listen(PORT, () => {
   "description": "prueba",
   "price": 200,
   "thumbnail": "",
-  "code": "A1d23ef",
+  "code": "A123",
   "stock": 23,
   "status": true,
   "category": "prueba"

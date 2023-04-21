@@ -3,7 +3,7 @@ export class Product {
     title,
     description,
     price,
-    thumbnail = "",
+    thumbnail = [],
     code,
     stock,
     status,

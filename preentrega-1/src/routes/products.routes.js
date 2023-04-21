@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { ProductManager } from "../ProductManager.js";
-import { validateFields } from "../middleware/validateFields.js";
+import { validateProductFields } from "../middleware/validateProductFields.js";
 import { validateProductId } from "../middleware/validateProductId.js";
+import { isNumeric } from "../middleware/isNumeric.js";
 
 const productManager = new ProductManager("./products.txt");
 
@@ -45,7 +46,7 @@ productRouter.get("/:id", async (req, res) => {
 });
 
 // Metodo HTTP para agregar productos
-productRouter.post("/", validateFields, async (req, res) => {
+productRouter.post("/", validateProductFields, async (req, res) => {
   try {
     const {
       title,
@@ -78,15 +79,11 @@ productRouter.post("/", validateFields, async (req, res) => {
 productRouter.put(
   "/:id",
   validateProductId,
-  validateFields,
+  isNumeric,
+  validateProductFields,
   async (req, res) => {
     try {
       const id = req.params.id;
-
-      if (!/^\d+$/.test(id)) {
-        return res.status(400).send(`The ID parameter must be a number.`);
-      }
-
       const { title, description, price, thumbnail, code, stock, category } =
         req.body;
 
