@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { ProductManager } from "../ProductManager.js";
-import { validateProductFields } from "../middleware/validateProductFields.js";
-import { validateProductId } from "../middleware/validateProductId.js";
-import { isNumeric } from "../middleware/isNumeric.js";
+import { validateProductFields } from "../middlewares/validateProductFields.js";
+import { validateProductId } from "../middlewares/validateProductId.js";
+import { isNumeric } from "../middlewares/isNumeric.js";
 
 const productManager = new ProductManager("./products.txt");
 

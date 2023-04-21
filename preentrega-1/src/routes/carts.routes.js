@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { CartManager } from "../CartManager.js";
-import { cartExists } from "../middleware/cartExists.js";
-import { productExist } from "../middleware/productExists.js";
-import { isNumeric } from "../middleware/isNumeric.js";
+import { cartExists } from "../middlewares/cartExists.js";
+import { productExist } from "../middlewares/productExists.js";
+import { isNumeric } from "../middlewares/isNumeric.js";
 
 const cartManager = new CartManager("./carts.txt");
 
