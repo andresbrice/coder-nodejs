@@ -6,7 +6,7 @@ export class Product {
     thumbnail = [],
     code,
     stock,
-    status,
+    status = true,
     category
   ) {
     this.id = 0;

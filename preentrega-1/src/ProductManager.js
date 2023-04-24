@@ -15,17 +15,33 @@ export class ProductManager {
   }
 
   async validateProduct(code) {
-    const products = await this.getProducts();
-    if (products.length === 0) return null;
+    try {
+      const products = await this.getProducts();
+      if (products.length === 0) return null;
 
-    const productExist = products.find((prod) => prod.code === code);
-    if (productExist) return `The product code "${code}" already exists.`;
+      const productIndex = products.findIndex((prod) => prod.code === code);
+      if (productIndex !== -1)
+        return `The product code "${code}" already exists.`;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   async addProduct(newProduct) {
     try {
+      const {
+        title,
+        description,
+        price,
+        thumbnail,
+        code,
+        stock,
+        status,
+        category,
+      } = newProduct;
       // valido que no exista el producto en el archivo segun su codigo
-      const validationMessage = await this.validateProduct(newProduct.code);
+      const validationMessage = await this.validateProduct(code);
       if (validationMessage) return validationMessage;
 
       const products = await this.getProducts();
@@ -33,15 +49,19 @@ export class ProductManager {
       const newProductId = await this.generateProductId();
 
       const product = new Product(
-        newProduct.title,
-        newProduct.description,
-        newProduct.price,
-        newProduct.thumbnail,
-        newProduct.code,
-        newProduct.stock,
-        newProduct.status,
-        newProduct.category
+        title,
+        description,
+        price,
+        thumbnail,
+        code,
+        stock,
+        status,
+        category
       );
+
+      if (product.stock === 0) {
+        product.status = false;
+      }
 
       product.id = newProductId;
       products.push(product);
@@ -51,12 +71,13 @@ export class ProductManager {
       return "Product added successfully.";
     } catch (error) {
       console.error(error);
+      return "Error adding product.";
     }
   }
 
   async getProducts() {
-    //Retorno todos los productos que leo de forma asincronica desde el path
     try {
+      //Retorno todos los productos que leo de forma asincronica desde el path
       const products = await fs.readFile(this.path, "utf-8");
       return JSON.parse(products);
     } catch (error) {
@@ -69,8 +90,10 @@ export class ProductManager {
     try {
       // Retorno producto segun su id
       const products = await this.getProducts();
-      const product = products.find((prod) => prod.id === parseInt(id));
-      return product;
+      const productIndex = products.findIndex(
+        (prod) => prod.id === parseInt(id)
+      );
+      if (productIndex !== -1) return products[productIndex];
     } catch (error) {
       console.error(error);
     }
@@ -80,7 +103,7 @@ export class ProductManager {
     try {
       // Consulto todos los productos y busco el index del producto a modificar
       const products = await this.getProducts();
-      const productIndex = products.findIndex((p) => p.id === parseInt(id));
+      const productIndex = products.findIndex((p) => p.id === id);
 
       if (productIndex === -1) {
         return "Product not found";
@@ -99,6 +122,14 @@ export class ProductManager {
         ...updatedData,
       };
 
+      if (updatedProduct.stock >= 1 && updatedProduct.status === false) {
+        updatedProduct.status = true;
+      }
+
+      if (updatedProduct.stock === 0) {
+        updatedProduct.status = false;
+      }
+
       products[productIndex] = updatedProduct;
 
       await fs.writeFile(this.path, JSON.stringify(products, null, 2), "utf-8");
@@ -111,10 +142,9 @@ export class ProductManager {
 
   async deleteProduct(id) {
     try {
+      // consulto los productos y segun su indice lo elimino del archivo
       const products = await this.getProducts();
-      const indexToDelete = products.findIndex(
-        (prod) => prod.id === parseInt(id)
-      );
+      const indexToDelete = products.findIndex((prod) => prod.id === id);
 
       if (indexToDelete === -1) {
         return "Product not found.";

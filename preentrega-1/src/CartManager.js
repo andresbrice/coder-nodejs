@@ -5,69 +5,69 @@ export class CartManager {
   constructor(path) {
     this.path = path;
   }
-
   async generateCartId() {
-    const carts = await this.getCarts();
-    const lastCart = carts[carts.length - 1];
-    const lastID = lastCart ? lastCart.id : 0;
-    const newID = lastID + 1;
-    return newID;
+    try {
+      const carts = await this.getCarts();
+      const lastCart = carts[carts.length - 1];
+      const lastID = lastCart ? lastCart.id : 0;
+      const newCartID = lastID + 1;
+      return newCartID;
+    } catch (error) {
+      console.error(error);
+      return 0;
+    }
   }
-
   async createCart() {
     try {
       const carts = await this.getCarts();
-      // genero id autoincremental segun el ultimo id del archivo
       const newCartId = await this.generateCartId();
-
       const cart = new Cart();
 
       cart.id = newCartId;
+
       carts.push(cart);
 
       await fs.writeFile(this.path, JSON.stringify(carts, null, 2), "utf-8");
 
       return "Cart created successfully.";
     } catch (error) {
-      return "There was a problem creating cart.";
+      console.error(error);
+      return "There was a problem creating the cart. Please try again later.";
     }
   }
-
   async getCarts() {
-    //Retorno todos los productos que leo de forma asincronica desde el path
+    let carts = [];
     try {
-      const carts = await fs.readFile(this.path, "utf-8");
-      return JSON.parse(carts);
+      const file = await fs.readFile(this.path, "utf-8");
+      carts = JSON.parse(file);
     } catch (error) {
       console.error(error);
-      return [];
     }
+    return carts;
   }
 
   async getCartById(id) {
     try {
-      // Retorno producto segun su id
       const carts = await this.getCarts();
       const cart = carts.find((c) => c.id === parseInt(id));
-      return cart;
+      return cart || null;
     } catch (error) {
       console.error(error);
+      return null;
     }
   }
-
-  async addProductToCart(cartId, productId) {
+  async addProductToCart(cartId, productId, quantity) {
     try {
-      const carts = await this.getCarts();
-      const cart = carts.find((c) => c.id === parseInt(cartId));
+      const cart = await this.getCartById(parseInt(cartId));
 
       const productIndex = cart.products.findIndex(
         (p) => p.id === parseInt(productId)
       );
 
       if (productIndex >= 0) {
-        cart.products[productIndex].quantity += 1;
+        cart.products[productIndex].quantity += quantity;
       } else {
-        cart.products.push({ id: parseInt(productId), quantity: 1 });
+        cart.products.push({ id: parseInt(productId), quantity: quantity });
       }
 
       await this.updateCart(cart);
@@ -82,6 +82,7 @@ export class CartManager {
     try {
       const carts = await this.getCarts();
       const index = carts.findIndex((c) => c.id === cart.id);
+
       if (index >= 0) {
         carts[index] = cart;
         await fs.writeFile(this.path, JSON.stringify(carts, null, 2), "utf-8");
@@ -90,6 +91,7 @@ export class CartManager {
       }
     } catch (error) {
       console.error(error);
+      return "There was a problem updating cart.";
     }
   }
 }

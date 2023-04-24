@@ -3,11 +3,10 @@ import { CartManager } from "../CartManager.js";
 export const cartExists = async (req, res, next) => {
   try {
     const cartManager = new CartManager("./carts.txt");
-    const cartId = parseInt(req.params.cartId);
-    const cart = await cartManager.getCartById(cartId);
+    const cart = await cartManager.getCartById(req.cartId);
 
-    if (!cart) {
-      return res.status(404).send(`Cart with ID ${cartId} not found.`);
+    if (cart === undefined) {
+      return res.status(404).send(`Cart with ID ${req.cartId} not found.`);
     }
 
     req.cart = cart;

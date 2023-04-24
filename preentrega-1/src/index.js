@@ -14,19 +14,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/products", productRouter);
 app.use("/api/carts", cartRouter);
 
+app.use((req, res) => {
+  res
+    .status(404)
+    .send(`The ${req.method} method or "${req.url}" route are invalid.`);
+});
+
 app.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
 });
 
-/* Modelo de objeto para testear ruta de productos
+/* Modelo de objeto para testear rutas de productos
 {
-  "title": "prueba",
-  "description": "prueba",
+  "title": "Product title",
+  "description": "Product description",
   "price": 200,
-  "thumbnail": "",
+  "thumbnail": ["product-image.jpg"],
   "code": "A123",
-  "stock": 23,
-  "status": true,
-  "category": "prueba"
+  "stock": 50,
+  "category": "Product category"
+}
+
+
+Modelo de objeto para testear ruta de adhesión de productos a carrito
+{
+  "quantity": 10
 }
 */

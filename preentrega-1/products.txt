@@ -1,35 +1,41 @@
 [
   {
     "id": 1,
-    "title": "prueba2",
-    "description": "prueba2",
+    "title": "Product title",
+    "description": "Product description",
     "price": 200,
-    "thumbnail": "",
+    "thumbnail": [
+      "product-image.jpg"
+    ],
     "code": "A123",
-    "stock": 23,
+    "stock": 30,
     "status": true,
-    "category": "prueba2"
+    "category": "Product category"
   },
   {
     "id": 2,
-    "title": "prueba",
-    "description": "prueba",
+    "title": "Product title",
+    "description": "Product description",
     "price": 200,
-    "thumbnail": "",
+    "thumbnail": [
+      "product-image.jpg"
+    ],
     "code": "B123",
-    "stock": 23,
+    "stock": 40,
     "status": true,
-    "category": "prueba"
+    "category": "Product category"
   },
   {
     "id": 3,
-    "title": "prueba",
-    "description": "prueba",
+    "title": "Product title",
+    "description": "Product description",
     "price": 200,
-    "thumbnail": "",
+    "thumbnail": [
+      "product-image.jpg"
+    ],
     "code": "C123",
-    "stock": 23,
+    "stock": 50,
     "status": true,
-    "category": "prueba"
+    "category": "Product category"
   }
 ]

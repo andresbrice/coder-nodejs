@@ -3,20 +3,18 @@ import { ProductManager } from "../ProductManager.js";
 import { validateProductFields } from "../middlewares/validateProductFields.js";
 import { validateProductId } from "../middlewares/validateProductId.js";
 import { isNumeric } from "../middlewares/isNumeric.js";
+import { validateLimit } from "../middlewares/validateLimit.js";
+import { productExist } from "../middlewares/productExists.js";
 
 const productManager = new ProductManager("./products.txt");
 
 const productRouter = Router();
 
 // Método HTTP para mostrar la ruta /products con todos los productos y si hay un query param de limite que muestre la cantidad solicitada en el parametro
-productRouter.get("/", async (req, res) => {
+productRouter.get("/", validateLimit, async (req, res) => {
   try {
     const allProducts = await productManager.getProducts();
-    const { limit } = req.query;
-
-    if (limit && !/^\d+$/.test(limit)) {
-      return res.status(400).send(`You must enter a number as limit.`);
-    }
+    const limit = req.limit;
 
     const products = limit
       ? allProducts.slice(0, parseInt(limit))
@@ -29,16 +27,9 @@ productRouter.get("/", async (req, res) => {
 });
 
 // Metodo HTTP para buscar productos por ID o mostrar mensaje de producto inexistente
-productRouter.get("/:id", async (req, res) => {
+productRouter.get("/:productId", isNumeric, productExist, async (req, res) => {
   try {
-    const id = req.params.id;
-
-    //en el caso que id no sea un numero devuelvo un mensaje indicando que ingrese un número
-    if (!/^\d+$/.test(id)) {
-      return res.status(400).send(`The ID parameter must be a number.`);
-    }
-
-    const product = await productManager.getProductById(parseInt(id));
+    const product = await productManager.getProductById(req.product.id);
     return res.status(200).send(product);
   } catch (error) {
     console.error(error);
@@ -48,16 +39,8 @@ productRouter.get("/:id", async (req, res) => {
 // Metodo HTTP para agregar productos
 productRouter.post("/", validateProductFields, async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      thumbnail,
-      code,
-      stock,
-      status,
-      category,
-    } = req.body;
+    const { title, description, price, thumbnail, code, stock, category } =
+      req.body;
 
     const message = await productManager.addProduct({
       title,
@@ -66,7 +49,6 @@ productRouter.post("/", validateProductFields, async (req, res) => {
       thumbnail,
       code,
       stock,
-      status,
       category,
     });
     res.status(200).send(message);
@@ -77,13 +59,13 @@ productRouter.post("/", validateProductFields, async (req, res) => {
 });
 
 productRouter.put(
-  "/:id",
-  validateProductId,
+  "/:productId",
   isNumeric,
+  validateProductId,
   validateProductFields,
   async (req, res) => {
     try {
-      const id = req.params.id;
+      const id = req.productId;
       const { title, description, price, thumbnail, code, stock, category } =
         req.body;
 
@@ -105,14 +87,9 @@ productRouter.put(
   }
 );
 
-productRouter.delete("/:id", async (req, res) => {
+productRouter.delete("/:productId", isNumeric, async (req, res) => {
   try {
-    const id = req.params.id;
-
-    if (!/^\d+$/.test(id)) {
-      return res.status(400).send(`The ID parameter must be a number.`);
-    }
-
+    const id = req.productId;
     const message = await productManager.deleteProduct(id);
     res.status(200).send(message);
   } catch (error) {

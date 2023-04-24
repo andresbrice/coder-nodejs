@@ -1,49 +1,62 @@
-const validateField = (field, fieldName, allowedTypes = []) => {
-  if (!field || !allowedTypes.includes(typeof field)) {
-    throw new Error(
-      `Invalid ${fieldName}. It should be a: ${allowedTypes.join(", ")}`
-    );
-  }
+const validationRules = {
+  POST: {
+    requiredFields: [
+      "title",
+      "description",
+      "price",
+      "code",
+      "stock",
+      "category",
+    ],
+    types: {
+      title: "string",
+      description: "string",
+      price: "number",
+      code: "string",
+      stock: "number",
+      category: "string",
+    },
+  },
+  PUT: {
+    requiredFields: [],
+    types: {
+      title: "string",
+      description: "string",
+      price: "number",
+      code: "string",
+      stock: "number",
+      category: "string",
+    },
+  },
 };
 
 export const validateProductFields = (req, res, next) => {
-  const { method } = req;
-  const { title, description, price, code, stock, status, category } = req.body;
+  const method = req.method;
 
-  if (method === "POST") {
-    try {
-      validateField(title, "title", ["string"]);
-      validateField(description, "description", ["string"]);
-      validateField(price, "price", ["number"]);
-      validateField(code, "code", ["string"]);
-      validateField(stock, "stock", ["number"]);
-      validateField(status, "status", ["boolean"]);
-      validateField(category, "category", ["string"]);
-    } catch (err) {
-      return res.status(400).send(err.message);
-    }
-  } else if (method === "PUT") {
-    const fieldsToValidate = {
-      title: ["string"],
-      description: ["string"],
-      price: ["number"],
-      code: ["string"],
-      stock: ["number"],
-      status: ["boolean"],
-      category: ["string"],
-    };
+  const { requiredFields, types } = validationRules[method];
 
-    try {
-      for (const [fieldName, allowedTypes] of Object.entries(
-        fieldsToValidate
-      )) {
-        if (req.body[fieldName]) {
-          validateField(req.body[fieldName], fieldName, allowedTypes);
-        }
-      }
-    } catch (err) {
-      return res.status(400).send(err.message);
-    }
+  const missingFields = requiredFields.filter((field) => !req.body[field]);
+
+  if (missingFields.length > 0) {
+    const message = `${missingFields.join(", ")} ${
+      missingFields.length > 1 ? "are" : "is"
+    } required.`;
+    const errorMessage = message.charAt(0).toUpperCase() + message.slice(1);
+    return res.status(400).send(errorMessage);
+  }
+
+  const invalidFields = Object.keys(req.body).filter(
+    (field) => types[field] && typeof req.body[field] !== types[field]
+  );
+
+  if (invalidFields.length > 0) {
+    const message = invalidFields.map(
+      (field) => `${field} must be of type ${types[field]}`
+    );
+    const errorMessage = message.join(", ");
+    const capitalizedMessage =
+      errorMessage.charAt(0).toUpperCase() + errorMessage.slice(1);
+    return res.status(400).send(capitalizedMessage);
   }
 
   next();

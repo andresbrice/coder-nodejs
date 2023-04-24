@@ -3,6 +3,7 @@ import { CartManager } from "../CartManager.js";
 import { cartExists } from "../middlewares/cartExists.js";
 import { productExist } from "../middlewares/productExists.js";
 import { isNumeric } from "../middlewares/isNumeric.js";
+import { validateStock } from "../middlewares/validateStock.js";
 
 const cartManager = new CartManager("./carts.txt");
 
@@ -11,7 +12,6 @@ const cartRouter = Router();
 cartRouter.post("/", async (req, res) => {
   try {
     const message = await cartManager.createCart();
-    message == "Cart create successfully.";
     res.status(200).send(message);
   } catch (error) {
     console.error(error);
@@ -22,10 +22,7 @@ cartRouter.post("/", async (req, res) => {
 // Metodo HTTP para buscar carrito por ID o mostrar mensaje de producto inexistente
 cartRouter.get("/:cartId", isNumeric, cartExists, async (req, res) => {
   try {
-    const id = req.params.cartId;
-    const cart = await cartManager.getCartById(parseInt(id));
-
-    return res.status(200).send(cart);
+    return res.status(200).send(req.cart);
   } catch (error) {
     console.error(error);
     return res.status(500).send(`Internal Server Error`);
@@ -38,12 +35,14 @@ cartRouter.post(
   isNumeric,
   cartExists,
   productExist,
+  validateStock,
   async (req, res) => {
     try {
-      const cartId = parseInt(req.params.cartId);
-      const productId = parseInt(req.params.productId);
-
-      const message = await cartManager.addProductToCart(cartId, productId);
+      const message = await cartManager.addProductToCart(
+        req.cart.id,
+        req.product.id,
+        req.quantity
+      );
       res.status(200).send(message);
     } catch (error) {
       // console.error(error);
