@@ -1,0 +1,23 @@
+<div class="grid-container" id="product-list">
+  {{#each products}}
+    {{#if status}}
+      <div class="product-card">
+        <h2>{{title}}</h2>
+        <p>{{description}}</p>
+        <p>Code: {{code}}</p>
+        <p>Price: {{price}}</p>
+        <p>Stock: {{stock}}</p>
+        <p>Category: {{category}}</p>
+        <div class="buttonContainer">
+          <button
+            type="submit"
+            class="deleteProductButton"
+            data-product-id="{{id}}"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>

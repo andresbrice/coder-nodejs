@@ -1,0 +1,17 @@
+Modelo de objeto para testear rutas de productos
+{
+  "title": "Product title",
+  "description": "Product description",
+  "price": 200,
+  "thumbnail": ["product-image.jpg"],
+  "code": "A123",
+  "stock": 50,
+  "category": "Product category"
+}
+
+
+Modelo de objeto para testear ruta de adhesión de productos a carrito
+{
+  "quantity": 10
+}
+

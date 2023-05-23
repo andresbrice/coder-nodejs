@@ -1,0 +1,13 @@
+<div class="header">
+  {{#if chat}}
+    <h1>Chat:</h1>
+  {{else}}
+    <h1>Product's List:</h1>
+    {{#if realtimeproducts}}
+      <button id="addProductButton" class="addProductButton">
+        Add Product
+      </button>
+    {{/if}}
+  {{/if}}
+
+</div>

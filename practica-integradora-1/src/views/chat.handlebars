@@ -1,0 +1,12 @@
+<div class="grid-message-container">
+  <div class="message-form">
+    <input type="text" id="chat-input" class="message-input" />
+    <button id="chat-button" class="message-button">Send</button>
+  </div>
+
+  <div id="message-container" class="message-container">
+    {{#each messages}}
+      <p>{{user}}: {{message}}</p>
+    {{/each}}
+  </div>
+</div>
