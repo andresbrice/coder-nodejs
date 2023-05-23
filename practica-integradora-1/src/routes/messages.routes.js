@@ -13,23 +13,26 @@ messageRouter.get("/", async (req, res) => {
   }
 });
 
-messageRouter.post("/send", async (req, res) => {
-  try {
-    const { user, message } = req.body;
+messageRouter.io.on("connection", (socket) => {
+  console.log("New client connected");
 
-    // Guarda el mensaje en la base de datos utilizando Mongoose
-    const newMessage = await Message.create({ user, message });
+  socket.on("message", async (data) => {
+    try {
+      const { user, message } = data;
 
-    // Obtén todos los mensajes de la base de datos
-    const messages = await Message.find().lean();
+      await Message.create({ user, message });
 
-    // Envía los mensajes actualizados a todos los clientes conectados
-    req.io.emit("receiveMessages", messages);
+      const messages = await Message.find().lean();
 
-    res.redirect("/");
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
+      messageRouter.io.emit("messages", messages);
+    } catch (error) {
+      console.error("Error saving message:", error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("The client has been disconnected");
+  });
 });
 
 export default messageRouter;

@@ -156,18 +156,19 @@ if (messageContainer) {
     },
     allowOutsideClick: false,
   }).then((result) => {
-    user = result.value; // Cambio: Asignar el valor a la variable existente "user" en lugar de crear una nueva variable "const user"
+    user = result.value;
     console.log(user);
 
     chatButton.addEventListener("click", () => {
       if (chatInput.value.trim().length > 0) {
         const message = chatInput.value;
-        socket.emit("sendMessage", { user: user, message: message });
+        console.log({ user: user, message: message });
+        socket.emit("message", { user: user, message: message });
         chatInput.value = "";
       }
     });
 
-    socket.on("receiveMessages", (messages) => {
+    socket.on("messages", (messages) => {
       messageContainer.innerHTML = "";
       messages.forEach((message) => {
         messageContainer.innerHTML += `<p>${message.user} : ${message.message}</p>`;
